@@ -10,6 +10,7 @@ from werkzeug.utils import secure_filename
 
 from generator import generate_certificate, sanitize_name_for_file
 from github_upload import build_github_blob_url, upload_certificate_to_github
+from formatter import format_participant_name, format_college_name
 
 # Configure logging
 logging.basicConfig(
@@ -204,11 +205,13 @@ def download_certificate(cert_id):
 
 @app.route("/generate", methods=["POST"])
 def generate_route():
-    participant_name = request.form.get("name", "").strip()
-    college_name = request.form.get("college", "").strip()
+    raw_name = request.form.get("name", "").strip()
+    raw_college = request.form.get("college", "").strip()
+    participant_name = format_participant_name(raw_name)
+    college_name = format_college_name(raw_college)
     email = request.form.get("email", "").strip()
 
-    logger.info(f"Certificate generation request for: {participant_name}")
+    logger.info(f"Certificate generation request for: {participant_name} ({college_name})")
 
     if not all([participant_name, college_name, email]):
         flash("All fields are required.", "error")
