@@ -3,153 +3,178 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Certificate Generated</title>
+    <title>Summit'26 - Certificate Generated</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #052c1e;
+            --primary-light: #0e6242;
+            --bg-gradient: linear-gradient(135deg, #031e13 0%, #052c1e 40%, #0b3b6f 100%);
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --text-main: #0f172a;
+            --text-muted: #475569;
+        }
+
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(130deg, #e0f2fe, #f8fafc 45%, #e2e8f0);
-            color: #1f2937;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
         }
 
         .wrap {
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 16px;
+            width: 100%;
+            max-width: 600px;
         }
 
         .card {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-            padding: 28px 24px;
-            margin-top: 20px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+            padding: 40px 32px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         h1 {
-            margin-top: 0;
-            font-size: clamp(1.3rem, 5vw, 1.8rem);
-            color: #0b3b6f;
-            line-height: 1.2;
+            color: var(--primary);
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
         }
 
-        p {
-            font-size: clamp(0.88rem, 3vw, 1rem);
-            line-height: 1.6;
-            word-break: break-word;
+        .info-row {
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .status-box {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-top: 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
         }
 
         .ok {
-            color: #166534;
-            background: #f0fdf4;
-            padding: 10px 14px;
-            border-radius: 8px;
-            border-left: 4px solid #22c55e;
+            color: #065f46;
+            background: #ecfdf5;
+            border-left: 4px solid #10b981;
         }
 
         .warn {
-            color: #b45309;
+            color: #92400e;
             background: #fffbeb;
-            padding: 10px 14px;
-            border-radius: 8px;
             border-left: 4px solid #f59e0b;
         }
 
-        a {
-            color: #0f766e;
-            text-decoration: none;
-            word-break: break-all;
-        }
-
-        a:hover {
-            text-decoration: underline;
+        .actions {
+            margin-top: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .btn-link {
-            display: inline-block;
-            margin-top: 16px;
-            background: linear-gradient(90deg, #0b3b6f, #0ea5e9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: #ffffff !important;
-            padding: 12px 20px;
-            border-radius: 10px;
+            padding: 14px 20px;
+            border-radius: 12px;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 0.95rem;
             text-decoration: none !important;
-            min-height: 44px;
-            line-height: 1.4;
-            touch-action: manipulation;
-            word-break: normal;
+            transition: all 0.25s ease;
+            box-shadow: 0 8px 16px -4px rgba(5, 44, 30, 0.3);
         }
 
         .btn-link:hover {
-            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px -4px rgba(5, 44, 30, 0.4);
         }
 
         .btn-link.secondary {
-            background: linear-gradient(90deg, #1d4ed8, #3b82f6);
+            background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+            box-shadow: 0 8px 16px -4px rgba(29, 78, 216, 0.3);
         }
 
-        .github-link {
+        .btn-link.secondary:hover {
+            box-shadow: 0 12px 20px -4px rgba(29, 78, 216, 0.4);
+        }
+
+        .btn-link.outline {
+            background: transparent;
+            color: var(--primary) !important;
+            border: 2px solid var(--primary);
+            box-shadow: none;
+        }
+
+        .btn-link.outline:hover {
+            background: rgba(5, 44, 30, 0.05);
+        }
+
+        .url-preview {
             display: block;
-            margin-top: 6px;
-            font-size: 0.88rem;
-            color: #0f766e;
+            margin-top: 4px;
+            font-size: 0.8rem;
+            color: #0d9488;
             word-break: break-all;
-        }
-
-        @media (max-width: 480px) {
-            .wrap {
-                padding: 12px;
-            }
-            .card {
-                padding: 20px 16px;
-                border-radius: 10px;
-            }
-            .btn-link {
-                display: block;
-                text-align: center;
-                width: 100%;
-            }
+            text-align: center;
         }
     </style>
 </head>
 <body>
     <div class="wrap">
         <div class="card">
-            <h1>Certificate Generated</h1>
-            <p><strong>Participant:</strong> {{ name }}</p>
-            <p><strong>Email:</strong> {{ email }}</p>
+            <h1>Certificate Generated!</h1>
+            <div class="info-row"><strong>Participant:</strong> {{ name }}</div>
+            <div class="info-row"><strong>Email:</strong> {{ email }}</div>
 
             {% if upload_status == 'uploaded' %}
-                <p class="ok"><strong>Certificate:</strong> Uploaded to GitHub successfully.</p>
+                <div class="status-box ok">Certificate uploaded to GitHub repository.</div>
             {% elif upload_status == 'failed' %}
-                <p class="warn"><strong>Certificate:</strong> Generated locally. GitHub upload failed.</p>
+                <div class="status-box warn">Certificate generated locally. GitHub upload failed.</div>
             {% else %}
-                <p class="warn"><strong>Certificate:</strong> Generated locally. GitHub upload skipped.</p>
+                <div class="status-box warn">Certificate generated locally. GitHub upload skipped.</div>
             {% endif %}
 
             {% if email_status == 'sent' %}
-                <p class="ok"><strong>Email:</strong> Sent successfully.</p>
+                <div class="status-box ok">Email sent to {{ email }} with PDF attachment.</div>
             {% elif email_status == 'skipped' %}
-                <p class="warn"><strong>Email:</strong> Skipped because Gmail is not configured.</p>
+                <div class="status-box warn">Email skipped (Gmail credentials not configured).</div>
             {% else %}
-                <p class="warn"><strong>Email:</strong> Not sent. Check Gmail SMTP app password settings.</p>
+                <div class="status-box warn">Email sending failed. Verify Gmail App Password settings.</div>
             {% endif %}
 
-            <p>
-                <a class="btn-link" href="{{ github_url }}" target="_blank">Open Certificate</a>
-                <a class="btn-link secondary" href="{{ url_for('download_certificate', cert_id=cert_id) }}">Download Certificate</a>
-                <a class="github-link" href="{{ github_url }}" target="_blank">{{ github_url }}</a>
-            </p>
-
-            <p>
-                <a class="btn-link" href="{{ url_for('form_page') }}">Generate another certificate</a>
-            </p>
+            <div class="actions">
+                <a class="btn-link" href="{{ github_url }}" target="_blank">
+                    <span>Open Certificate (Inline View)</span>
+                </a>
+                <a class="btn-link secondary" href="{{ url_for('download_certificate', cert_id=cert_id) }}">
+                    <span>Download Certificate PDF</span>
+                </a>
+                <span class="url-preview">{{ github_url }}</span>
+                <a class="btn-link outline" href="{{ url_for('form_page') }}">
+                    <span>Generate Another Certificate</span>
+                </a>
+            </div>
         </div>
     </div>
 </body>

@@ -3,247 +3,212 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Event Certificate Generator</title>
+    <title>Summit'26 - Certificate Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f1f5f9;
-            --card: #ffffff;
-            --text: #0f172a;
-            --muted: #475569;
-            --accent: #0b3b6f;
-            --accent-2: #0ea5e9;
-            --error-bg: #fee2e2;
+            --primary: #052c1e;
+            --primary-light: #0e6242;
+            --accent: #10b981;
+            --bg-gradient: linear-gradient(135deg, #031e13 0%, #052c1e 40%, #0b3b6f 100%);
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border-color: #e2e8f0;
+            --focus-ring: rgba(16, 185, 129, 0.25);
+            --error-bg: #fef2f2;
             --error-text: #991b1b;
-            --success-bg: #dcfce7;
-            --success-text: #166534;
         }
 
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(130deg, #e0f2fe, #f8fafc 45%, #e2e8f0);
-            color: var(--text);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
         }
 
         .container {
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 0 16px;
+            width: 100%;
+            max-width: 580px;
         }
 
         .card {
-            background: var(--card);
-            border-radius: 14px;
-            box-shadow: 0 10px 28px rgba(2, 6, 23, 0.12);
-            padding: 28px 24px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+            padding: 40px 32px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .badge-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ecfdf5;
+            color: #047857;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 50px;
+            border: 1px solid #a7f3d0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge.date-badge {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border-color: #bfdbfe;
         }
 
         h1 {
-            margin-top: 0;
-            color: var(--accent);
-            font-size: clamp(1.3rem, 5vw, 1.9rem);
-            line-height: 1.2;
+            color: var(--primary);
+            font-size: clamp(1.6rem, 5vw, 2.1rem);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            line-height: 1.25;
+            margin-bottom: 8px;
         }
 
-        .meta {
-            margin: 6px 0;
-            color: var(--muted);
-            font-size: clamp(0.85rem, 3vw, 1rem);
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
         }
 
         .alert {
             background: var(--error-bg);
             color: var(--error-text);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 14px;
-            font-size: 0.92rem;
-        }
-
-        .success {
-            background: var(--success-bg);
-            color: var(--success-text);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 12px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-left: 4px solid #ef4444;
         }
 
         form {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 14px;
-            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        .full {
-            grid-column: 1 / -1;
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         label {
-            display: block;
-            margin-bottom: 6px;
             font-weight: 700;
-            font-size: 0.92rem;
+            font-size: 0.88rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         input {
             width: 100%;
-            border: 1.5px solid #cbd5e1;
-            border-radius: 10px;
-            padding: 12px 14px;
-            font-size: 16px; /* prevents iOS auto-zoom */
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 0.98rem;
+            font-family: inherit;
+            color: var(--text-main);
             background: #ffffff;
-            transition: border-color 0.2s;
-            -webkit-appearance: none;
-            appearance: none;
+            transition: all 0.2s ease;
+            outline: none;
         }
 
         input:focus {
-            outline: none;
-            border-color: var(--accent-2);
-            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px var(--focus-ring);
         }
 
-        input[type="file"] {
-            padding: 10px 14px;
-            cursor: pointer;
-            color: var(--muted);
+        input::placeholder {
+            color: #94a3b8;
         }
 
-        input[type="file"].hidden-input {
-            display: none;
-        }
-
-        button {
-            width: 100%;
+        .btn-submit {
+            margin-top: 10px;
             border: none;
-            border-radius: 10px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: #ffffff;
-            padding: 14px;
-            font-size: 16px;
+            padding: 16px 24px;
+            font-size: 1rem;
             font-weight: 700;
+            font-family: inherit;
             cursor: pointer;
-            min-height: 48px;
-            touch-action: manipulation;
-            transition: opacity 0.2s;
+            box-shadow: 0 10px 20px -5px rgba(5, 44, 30, 0.4);
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        button:hover {
-            opacity: 0.92;
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 24px -5px rgba(5, 44, 30, 0.5);
+            background: linear-gradient(135deg, #073b29 0%, #107851 100%);
         }
 
-        button:active {
-            opacity: 0.8;
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.82rem;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         @media (max-width: 480px) {
-            .container {
-                padding: 12px;
-            }
             .card {
-                padding: 20px 16px;
-                border-radius: 12px;
+                padding: 28px 20px;
             }
-            form {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .photo-tools {
-            display: grid;
-            gap: 12px;
-        }
-
-        .button-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 10px;
-        }
-
-        .picker-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            background: linear-gradient(90deg, #0b3b6f, #2563eb);
-        }
-
-        .info-text {
-            margin: 0;
-            color: var(--muted);
-            font-size: 0.92rem;
-        }
-
-        .preview-box {
-            display: none;
-            border: 1.5px solid #cbd5e1;
-            border-radius: 12px;
-            padding: 14px;
-            background: #f8fafc;
-        }
-
-        .preview-box.active {
-            display: block;
-        }
-
-        .preview-box img {
-            display: block;
-            max-width: 220px;
-            width: 100%;
-            border-radius: 10px;
-            border: 1px solid #cbd5e1;
-            margin-top: 10px;
-        }
-
-        .webcam-panel {
-            display: none;
-            border: 1.5px solid #cbd5e1;
-            border-radius: 12px;
-            padding: 14px;
-            background: #f8fafc;
-        }
-
-        .webcam-panel.active {
-            display: block;
-        }
-
-        .webcam-panel video {
-            display: block;
-            width: 100%;
-            max-width: 420px;
-            border-radius: 10px;
-            background: #020617;
-            margin-bottom: 12px;
-        }
-
-        .webcam-actions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 10px;
-        }
-
-        .muted-button {
-            background: linear-gradient(90deg, #475569, #64748b);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card">
-            <h1>Event Certificate Generator</h1>
-            <p class="meta"><strong>Event:</strong> {{ event_name }}</p>
-            <p class="meta"><strong>Date:</strong> {{ event_date }}</p>
+            <div class="header">
+                <div class="badge-row">
+                    <span class="badge">Summit'26</span>
+                    <span class="badge date-badge">25/07/2026</span>
+                </div>
+                <h1>Certificate Generator</h1>
+                <p class="subtitle">Enter participant details to generate & email the certificate</p>
+            </div>
 
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -253,156 +218,53 @@
                 {% endif %}
             {% endwith %}
 
-            <form action="{{ url_for('generate_route') }}" method="POST" enctype="multipart/form-data">
-                <div>
+            <form action="{{ url_for('generate_route') }}" method="POST">
+                <div class="form-group">
                     <label for="name">Participant Name</label>
-                    <input id="name" name="name" type="text" required />
+                    <input 
+                        id="name" 
+                        name="name" 
+                        type="text" 
+                        placeholder="e.g. Boomathi P" 
+                        required 
+                        autocomplete="name"
+                    />
                 </div>
 
-                <div>
+                <div class="form-group">
                     <label for="college">College Name</label>
-                    <input id="college" name="college" type="text" required />
+                    <input 
+                        id="college" 
+                        name="college" 
+                        type="text" 
+                        placeholder="e.g. KGiSL Institute of Technology" 
+                        required 
+                    />
                 </div>
 
-                <div>
+                <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input id="email" name="email" type="email" required />
+                    <input 
+                        id="email" 
+                        name="email" 
+                        type="email" 
+                        placeholder="e.g. participant@example.com" 
+                        required 
+                        autocomplete="email"
+                    />
                 </div>
 
-                <div class="full">
-                    <label for="photo">Participant Photo</label>
-                    <div class="photo-tools">
-                        <input id="photo" class="hidden-input" name="photo" type="file" accept="image/png,image/jpeg,image/webp" required />
-                        <div class="button-row">
-                            <button type="button" id="choosePhotoBtn" class="picker-button">Choose File</button>
-                            <button type="button" id="openCameraBtn">Use Webcam</button>
-                        </div>
-                        <p id="photoStatus" class="info-text">No photo selected. Supported formats: PNG, JPG, JPEG, WebP.</p>
-                        <div id="photoPreviewBox" class="preview-box">
-                            <strong>Selected Photo</strong>
-                            <img id="photoPreview" alt="Selected participant photo" />
-                        </div>
-                        <div id="webcamPanel" class="webcam-panel">
-                            <video id="webcamVideo" autoplay playsinline></video>
-                            <canvas id="webcamCanvas" hidden></canvas>
-                            <div class="webcam-actions">
-                                <button type="button" id="capturePhotoBtn">Capture</button>
-                                <button type="button" id="closeCameraBtn" class="muted-button">Close Camera</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="full">
-                    <button type="submit" id="generateBtn">Generate Certificate</button>
-                </div>
+                <button type="submit" class="btn-submit" id="generateBtn">
+                    <span>Generate Certificate</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
             </form>
         </div>
+
+        <p class="footer-note">BrewingSec CyberDev Summit'26 &bull; KGiSL Campus</p>
     </div>
-    <script>
-        const photoInput = document.getElementById('photo');
-        const choosePhotoBtn = document.getElementById('choosePhotoBtn');
-        const openCameraBtn = document.getElementById('openCameraBtn');
-        const capturePhotoBtn = document.getElementById('capturePhotoBtn');
-        const closeCameraBtn = document.getElementById('closeCameraBtn');
-        const photoStatus = document.getElementById('photoStatus');
-        const photoPreviewBox = document.getElementById('photoPreviewBox');
-        const photoPreview = document.getElementById('photoPreview');
-        const webcamPanel = document.getElementById('webcamPanel');
-        const webcamVideo = document.getElementById('webcamVideo');
-        const webcamCanvas = document.getElementById('webcamCanvas');
-
-        let webcamStream = null;
-
-        function stopWebcam() {
-            if (!webcamStream) {
-                return;
-            }
-
-            webcamStream.getTracks().forEach((track) => track.stop());
-            webcamStream = null;
-            webcamVideo.srcObject = null;
-            webcamPanel.classList.remove('active');
-        }
-
-        function showPreview(src, label) {
-            photoPreview.src = src;
-            photoPreviewBox.classList.add('active');
-            photoStatus.textContent = label;
-        }
-
-        choosePhotoBtn.addEventListener('click', () => {
-            photoInput.click();
-        });
-
-        photoInput.addEventListener('change', () => {
-            const [file] = photoInput.files;
-            if (!file) {
-                photoPreviewBox.classList.remove('active');
-                photoStatus.textContent = 'No photo selected. Supported formats: PNG, JPG, JPEG, WebP.';
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = () => {
-                showPreview(reader.result, `Selected file: ${file.name}`);
-            };
-            reader.readAsDataURL(file);
-            stopWebcam();
-        });
-
-        openCameraBtn.addEventListener('click', async () => {
-            try {
-                webcamStream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: 'user',
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    }
-                });
-                webcamVideo.srcObject = webcamStream;
-                webcamPanel.classList.add('active');
-                photoStatus.textContent = 'Webcam is active. Capture a photo when ready.';
-            } catch (error) {
-                photoStatus.textContent = `Could not open webcam: ${error.message}`;
-            }
-        });
-
-        capturePhotoBtn.addEventListener('click', () => {
-            if (!webcamStream) {
-                photoStatus.textContent = 'Open the webcam before capturing a photo.';
-                return;
-            }
-
-            webcamCanvas.width = webcamVideo.videoWidth;
-            webcamCanvas.height = webcamVideo.videoHeight;
-            const context = webcamCanvas.getContext('2d');
-            context.drawImage(webcamVideo, 0, 0, webcamCanvas.width, webcamCanvas.height);
-
-            webcamCanvas.toBlob((blob) => {
-                if (!blob) {
-                    photoStatus.textContent = 'Failed to capture the webcam photo.';
-                    return;
-                }
-
-                const file = new File([blob], 'webcam-photo.png', { type: 'image/png' });
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                photoInput.files = dataTransfer.files;
-
-                showPreview(webcamCanvas.toDataURL('image/png'), 'Captured photo from webcam');
-                stopWebcam();
-            }, 'image/png');
-        });
-
-        closeCameraBtn.addEventListener('click', () => {
-            stopWebcam();
-            if (!photoInput.files.length) {
-                photoStatus.textContent = 'No photo selected. Supported formats: PNG, JPG, JPEG, WebP.';
-            }
-        });
-
-        window.addEventListener('beforeunload', stopWebcam);
-    </script>
 </body>
 </html>

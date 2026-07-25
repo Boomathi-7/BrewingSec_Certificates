@@ -31,9 +31,9 @@ STATIC_DIR = os.path.join(BASE_DIR, "static")
 TEMPLATE_IMAGE = os.path.join(STATIC_DIR, "certificate_template.png")
 FONT_PATH = os.path.join(STATIC_DIR, "fonts", "DejaVuSans-Bold.ttf")
 
-EVENT_NAME = "Ascend Pitch"
-EVENT_DATE = "March 28, 2026"
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
+EVENT_NAME = "Summit'26"
+EVENT_DATE = "25/07/2026"
+
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY", "change-this-secret")
@@ -81,19 +81,19 @@ def send_certificate_email(
     """Send certificate email with verification link and PDF attachment."""
     validate_mail_configuration()
     msg = Message(
-        subject="Ascend Pitch 2026 - Certificate of Participation",
+        subject="Summit'26 - Certificate of Participation",
         recipients=[to_email],
         sender=app.config["MAIL_USERNAME"],
         body=(
             f"Dear {name},\n\n"
-            "Thank you for participating in the AscendPitch held at KGiSL Institute of Technology on 28.03.2026.\n"
-            "We hope you gained a better experience at the event.\n\n"
+            "Thank you for participating in Summit'26 held at KGiSL Campus on 25/07/2026.\n"
+            "We hope you gained a great experience at the event.\n\n"
             "Your certificate is attached in this mail.\n\n"
             "Verification link:\n"
             f"{verification_link}\n\n"
             "Thank you\n\n"
             "Best Regards,\n"
-            "PyExpo Crew"
+            "BrewingSec Crew"
         ),
     )
     with app.open_resource(certificate_path) as certificate_file:
@@ -145,7 +145,7 @@ def generate_certificate_id():
     except (OSError, ValueError):
         counter = 1
 
-    certificate_id = f"ASCEND-2026-{counter:04d}"
+    certificate_id = f"SUMMIT-2026-{counter:04d}"
 
     with open(COUNTER_FILE, "w", encoding="utf-8") as counter_file:
         counter_file.write(str(counter + 1))
@@ -207,18 +207,12 @@ def generate_route():
     participant_name = request.form.get("name", "").strip()
     college_name = request.form.get("college", "").strip()
     email = request.form.get("email", "").strip()
-    photo = request.files.get("photo")
 
     logger.info(f"Certificate generation request for: {participant_name}")
 
-    if not all([participant_name, college_name, email, photo]):
+    if not all([participant_name, college_name, email]):
         flash("All fields are required.", "error")
         logger.warning("Missing required fields in certificate request")
-        return redirect(url_for("form_page"))
-
-    if not photo.filename or not allowed_file(photo.filename):
-        flash("Upload a valid photo. Allowed: png, jpg, jpeg, webp.", "error")
-        logger.warning("Missing or invalid participant photo")
         return redirect(url_for("form_page"))
 
     github_token = os.getenv("GITHUB_TOKEN")
@@ -243,13 +237,7 @@ def generate_route():
     upload_enabled = has_config_value(github_repo) and has_config_value(github_token)
     verification_link = hosted_certificate_url if upload_enabled else local_certificate_url
 
-    os.makedirs(UPLOADS_DIR, exist_ok=True)
     os.makedirs(CERTIFICATES_DIR, exist_ok=True)
-
-    photo_filename = f"{uuid4().hex}_{secure_filename(photo.filename)}"
-    photo_path = os.path.join(UPLOADS_DIR, photo_filename)
-    photo.save(photo_path)
-    logger.info(f"Photo saved to: {photo_path}")
 
     try:
         logger.info("Generating certificate...")
@@ -258,21 +246,12 @@ def generate_route():
             output_path=output_path,
             participant_name=participant_name,
             college_name=college_name,
-            participant_photo_path=photo_path,
-            qr_data=verification_link,
-            font_path=FONT_PATH,
         )
         logger.info(f"Certificate generated at: {output_path}")
     except Exception as exc:
         flash(f"Certificate generation failed: {exc}", "error")
         logger.error(f"Certificate generation error: {exc}", exc_info=True)
         return redirect(url_for("form_page"))
-    finally:
-        try:
-            if os.path.exists(photo_path):
-                os.remove(photo_path)
-        except OSError as exc:
-            logger.warning(f"Could not remove temporary photo {photo_path}: {exc}")
 
     upload_status = "skipped"
     certificate_link = local_certificate_url

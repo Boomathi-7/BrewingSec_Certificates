@@ -1,5 +1,4 @@
-from PIL import Image, ImageDraw, ImageFont, ImageOps
-import qrcode
+from PIL import Image, ImageDraw, ImageFont
 import os
 import re
 
@@ -21,138 +20,145 @@ def sanitize_name_for_file(name):
     return name or "participant"
 
 
+def format_name(name):
+    """Format participant name with proper title casing and clean spacing.
+    
+    Examples:
+        "boomathi p" → "Boomathi P"
+        "JOHN DOE" → "John Doe"
+    """
+    if not name:
+        return ""
+    words = name.strip().split()
+    formatted_words = []
+    for w in words:
+        if len(w) == 1:
+            formatted_words.append(w.upper())
+        elif w.islower() or w.isupper():
+            formatted_words.append(w.capitalize())
+        else:
+            formatted_words.append(w)
+    return " ".join(formatted_words)
+
+
+def format_college(college):
+    """Format college name with clean title casing and spacing.
+    
+    Examples:
+        "kgisl institute of technology" → "KGiSL Institute of Technology"
+    """
+    if not college:
+        return ""
+    words = college.strip().split()
+    formatted_words = []
+    lowercase_words = {"of", "and", "in", "for", "the", "at", "to", "on"}
+    for i, w in enumerate(words):
+        w_lower = w.lower()
+        if w_lower == "kgisl":
+            formatted_words.append("KGiSL")
+        elif len(w) <= 3 and w.isupper():
+            formatted_words.append(w)
+        elif i > 0 and w_lower in lowercase_words:
+            formatted_words.append(w_lower)
+        elif w.islower() or w.isupper():
+            formatted_words.append(w.capitalize())
+        else:
+            formatted_words.append(w)
+    return " ".join(formatted_words)
+
+
 def generate_certificate(
     template_path,
     output_path,
     participant_name,
     college_name,
-    participant_photo_path,
-    qr_data,
-    font_path,
+    participant_photo_path=None,
+    qr_data=None,
+    font_path=None,
 ):
-
+    """Generate a certificate PDF for Summit'26 without photo or QR code.
+    
+    Participant Name and College Name are beautifully formatted, centered,
+    and placed relative to the template's central line accent.
+    """
     # Validate template exists
     if not os.path.exists(template_path):
         raise FileNotFoundError(f"Certificate template not found: {template_path}")
     
-    img = Image.open(template_path)
-
+    img = Image.open(template_path).convert("RGB")
     draw = ImageDraw.Draw(img)
-
     img_width, img_height = img.size
 
-    # Construct font paths from the template directory
+    # Construct font paths from the static directory
     static_dir = os.path.dirname(template_path)
     fonts_dir = os.path.join(static_dir, "fonts")
     
-    # Check if fonts directory exists
     if not os.path.exists(fonts_dir):
         raise FileNotFoundError(f"Fonts directory not found: {fonts_dir}")
     
-    # Define font paths
     name_font_path = os.path.join(fonts_dir, "PlayfairDisplay-Bold.ttf")
     desc_font_path = os.path.join(fonts_dir, "PlayfairDisplay-Regular.ttf")
     
-    # Check if font files exist
     for font_file in [name_font_path, desc_font_path]:
         if not os.path.exists(font_file):
             raise FileNotFoundError(f"Font file not found: {font_file}")
-    
-    # Start with balanced font sizes and auto-fit where needed.
-    name_font_size = max(52, int(img_height * 0.030))
-    desc_font_size = max(20, int(img_height * 0.010))
+
+    # Format text inputs
+    formatted_participant_name = format_name(participant_name)
+    formatted_college_name = format_college(college_name)
+
+    # Base font sizes & scaling bounds
+    name_font_size = max(56, int(img_height * 0.053))
+    desc_font_size = max(30, int(img_height * 0.028))
+
     name_font = ImageFont.truetype(name_font_path, name_font_size)
     desc_font = ImageFont.truetype(desc_font_path, desc_font_size)
 
-    # Relative anchors keep placement stable if template dimensions change.
-    line_y = int(img_height * 0.49)
+    # Color theme: dark forest green matching Summit'26 template accents
+    text_color = "#052c1e"
 
-    photo_size = max(220, int(img_height * 0.167))
-    photo_card_padding = 12
-    photo_card_size = photo_size + (photo_card_padding * 2)
-    photo_margin_right = int(img_width * 0.120)
-    photo_margin_top = int(img_height * 0.318)
-    photo_x = img_width - photo_card_size - photo_margin_right
-    photo_y = photo_margin_top
-
-    qr_size = max(190, int(img_height * 0.150))
-    qr_card_padding = 12
-    qr_card_size = qr_size + (qr_card_padding * 2)
-    qr_margin_right = int(img_width * 0.080)
-    qr_margin_bottom = int(img_height * 0.188)
-    qr_x = img_width - qr_card_size - qr_margin_right
-    qr_y = img_height - qr_card_size - qr_margin_bottom
-
-    if participant_photo_path:
-        photo = Image.open(participant_photo_path).convert("RGB")
-        photo = ImageOps.fit(photo, (photo_size, photo_size), method=Image.Resampling.LANCZOS)
-
-        # Keep photo inside border on a white card.
-        framed_photo = Image.new("RGB", (photo_card_size, photo_card_size), "white")
-        frame_draw = ImageDraw.Draw(framed_photo)
-        frame_draw.rectangle(
-            [0, 0, photo_card_size - 1, photo_card_size - 1],
-            outline="#d1d5db",
-            width=1,
-        )
-        framed_photo.paste(photo, (photo_card_padding, photo_card_padding))
-        img.paste(framed_photo, (photo_x, photo_y))
+    # Max available horizontal width (75% of total width)
+    max_text_width = int(img_width * 0.75)
 
     # =============================
-    # ANCHOR: HORIZONTAL LINE
+    # PARTICIPANT NAME
     # =============================
-    
-    # =============================
-    # NAME
-    # =============================
-    
-    # Auto-shrink long names so they remain centered in the available middle area.
-    max_name_width = int(img_width * 0.58)
     while True:
-        bbox = draw.textbbox((0, 0), participant_name, font=name_font)
+        bbox = draw.textbbox((0, 0), formatted_participant_name, font=name_font)
         text_width = bbox[2] - bbox[0]
-        if text_width <= max_name_width or name_font_size <= 34:
+        if text_width <= max_text_width or name_font_size <= 32:
             break
         name_font_size -= 2
         name_font = ImageFont.truetype(name_font_path, name_font_size)
 
-    text_width = bbox[2] - bbox[0]
-    text_height = bbox[3] - bbox[1]
-    name_x = (img_width - text_width) // 2
-    name_y = line_y - text_height - 14
-    draw.text((name_x, name_y), participant_name, fill="#0b2a44", font=name_font)
+    bbox_name = draw.textbbox((0, 0), formatted_participant_name, font=name_font)
+    name_w = bbox_name[2] - bbox_name[0]
+    name_x = (img_width - name_w) // 2
+    name_y = 398  # Centered above green horizontal line (line is at Y=482)
+
+    draw.text((name_x, name_y), formatted_participant_name, fill=text_color, font=name_font)
 
     # =============================
-    # DESCRIPTION
+    # COLLEGE NAME
     # =============================
-    
-    # Keep body text minimal to avoid overlapping the printed template wording.
-    if college_name:
-        college_line = f"{college_name}"
-        bbox = draw.textbbox((0, 0), college_line, font=desc_font)
-        text_width = bbox[2] - bbox[0]
-        desc_x = (img_width - text_width) // 2
-        desc_y = line_y + 56
-        draw.text((desc_x, desc_y), college_line, fill="#0b2a44", font=desc_font)
+    if formatted_college_name:
+        while True:
+            bbox = draw.textbbox((0, 0), formatted_college_name, font=desc_font)
+            text_width = bbox[2] - bbox[0]
+            if text_width <= max_text_width or desc_font_size <= 20:
+                break
+            desc_font_size -= 2
+            desc_font = ImageFont.truetype(desc_font_path, desc_font_size)
+
+        bbox_desc = draw.textbbox((0, 0), formatted_college_name, font=desc_font)
+        desc_w = bbox_desc[2] - bbox_desc[0]
+        desc_x = (img_width - desc_w) // 2
+        desc_y = 515  # Centered below green horizontal line
+
+        draw.text((desc_x, desc_y), formatted_college_name, fill=text_color, font=desc_font)
 
     # =============================
-    # QR
+    # SAVE AS PDF
     # =============================
-    
-    qr = qrcode.make(qr_data).convert("RGB")
-    qr = qr.resize((qr_size, qr_size), Image.Resampling.NEAREST)
-
-    # Keep QR inside border on a white card.
-    framed_qr = Image.new("RGB", (qr_card_size, qr_card_size), "white")
-    qr_draw = ImageDraw.Draw(framed_qr)
-    qr_draw.rectangle([0, 0, qr_card_size - 1, qr_card_size - 1], outline="#d1d5db", width=1)
-    framed_qr.paste(qr, (qr_card_padding, qr_card_padding))
-    img.paste(framed_qr, (qr_x, qr_y))
-
-    # =============================
-    # VERIFY TEMPLATE SIZE
-    # =============================
-    
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    img = img.convert("RGB")
     img.save(output_path, "PDF")
