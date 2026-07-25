@@ -60,6 +60,8 @@ def generate_certificate(
     # Pro UI Formatting
     formatted_participant_name = format_participant_name(participant_name)
     formatted_college_name = format_college_name(college_name)
+    if formatted_college_name and not formatted_college_name.lower().startswith("from "):
+        formatted_college_name = f"From : {formatted_college_name}"
 
     # Base font sizes scaled proportionally to template height (1414px)
     name_font_size = max(44, int(img_height * 0.038))
@@ -118,4 +120,4 @@ def generate_certificate(
     # SAVE AS PDF
     # =============================
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    img.save(output_path, "PDF")
+    img.save(output_path, "PDF")
