@@ -45,8 +45,8 @@ def format_participant_name(raw_name: str) -> str:
     - Uppercases single letter initials and Roman numerals
     
     Examples:
-        "boomathi p" -> "Boomathi P"
-        "m. john doe" -> "M. John Doe"
+        "varshini s" -> "Varshini S"
+        "m. varshini" -> "M. Varshini"
         "mary-jane o'connor" -> "Mary-Jane O'Connor"
     """
     if not raw_name:

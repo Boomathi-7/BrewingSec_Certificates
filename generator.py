@@ -8,8 +8,8 @@ def sanitize_name_for_file(name):
     """Convert participant name into a safe filename.
     
     Examples:
-        "Boomathi P" → "boomathi_p"
-        "Boomathi @ KGiSL" → "boomathi_kgisl"
+        "Varshini S" → "varshini_s"
+        "Varshini @ KGiSL" → "varshini_kgisl"
     """
     name = name.strip().lower()
     # Keep only lowercase letters, numbers, spaces, and underscores.
